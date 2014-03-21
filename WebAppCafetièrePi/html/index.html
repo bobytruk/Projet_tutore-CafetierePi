@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+        <meta name="viewport" content="width=device-width">   <!--Compatibilité pour mobile -->
+        <title>Cafeti&egrave;rePi</title>  <!-- Titre de l'onglet -->
+        <script type="text/javascript" src="/webiopi.js"></script>
+        <script type="text/javascript">
+        
+         webiopi().ready(function() {
+                // Following function will process data received from set/getCafetierePiHours macro.
+                var updateCafetierePiHours = function(macro, args, response) {
+                    var hours = response.split(";");
+                    // Following lines use jQuery functions
+                    $("#inputOn").val(hours[0]);
+                    $("#inputOff").val(hours[1]);
+                }
+                
+                var updateCafetierePiMinutes = function(macro, args, response) {
+                    var minutes = response.split(";");
+                    // Following lines use jQuery functions
+                    $("#inputOnMin").val(minutes[0]);
+                    $("#inputOffMin").val(minutes[1]);
+                }
+                
+                // Immediately call getCafetierePiHours macro to update the UI with current values
+                // "getCafetierePiHours" refers to macro name
+                // [] is an empty array, because getCafetierePiHours macro does not take any argument
+                // updateCafetierePiHours is the callback function, defined above
+                webiopi().callMacro("getCafetierePiHours", [], updateCafetierePiHours);
+                webiopi().callMacro("getCafetierePiMinutes", [], updateCafetierePiMinutes);
+                
+                // Create a button to call setCafetierePiHours macro
+                var sendButton = webiopi().createButton("sendButton", "Envoyer", function() {
+                   // Arguments sent to the macro
+                    var hours = [$("#inputOn").val(), $("#inputOff").val()];
+                    var minutes = [$("#inputOnMin").val(), $("#inputOffMin").val()];
+                    // Call the macro
+                    webiopi().callMacro("setCafetierePiHours", hours, updateCafetierePiHours);
+                    webiopi().callMacro("setCafetierePiMinutes", minutes, updateCafetierePiMinutes);
+                });
+
+                // Append the button to the controls box using a jQuery function
+                $("#controls").append(sendButton);
+
+                // Create a "Allumer" labeled button for GPIO 24
+                var button = webiopi().createGPIOButton(24, "Allumer");
+
+                // Append the button to the controls box
+                $("#controls").append(button);
+
+                // Refresh GPIO buttons
+                // pass true to refresh repeatedly of false to refresh once
+                webiopi().refreshGPIO(true);
+                
+                (function() {
+                    var elm = document.getElementById('inputOn'),
+                    df = document.createDocumentFragment();
+                    for (var i = 0; i <= 11; i++) {
+                        var option = document.createElement('option');
+                        option.value = i;
+                        option.appendChild(document.createTextNode(i+"h"));
+                        df.appendChild(option);
+                    }
+                    elm.appendChild(df);
+                }());
+                
+                (function() {
+                    var elm = document.getElementById('inputOff'),
+                    df = document.createDocumentFragment();
+                    for (var i = 0; i <= 11; i++) {
+                        var option = document.createElement('option');
+                        option.value = i;
+                        option.appendChild(document.createTextNode(i+"h"));
+                        df.appendChild(option);
+                    }
+                    elm.appendChild(df);
+                }());
+                
+                (function() {
+                    var elm = document.getElementById('inputOnMin'),
+                    df = document.createDocumentFragment();
+                    for (var i = 0; i <= 59; i++) {
+                        var option = document.createElement('option');
+                        option.value = i;
+                        option.appendChild(document.createTextNode(i));
+                        df.appendChild(option);
+                    }
+                    elm.appendChild(df);
+                }());
+                
+                (function() {
+                    var elm = document.getElementById('inputOffMin'),
+                    df = document.createDocumentFragment();
+                    for (var i = 0; i <= 59; i++) {
+                        var option = document.createElement('option');
+                        option.value = i;
+                        option.appendChild(document.createTextNode(i));
+                        df.appendChild(option);
+                    }
+                    elm.appendChild(df);
+                }());
+
+        });
+        
+
+                
+        </script>
+        
+        <style type="text/css">
+                button {
+                        display: block;
+                        margin: 5px 5px 5px 5px;
+                        width: 160px;
+                        height: 45px;
+                        font-size: 24pt;
+                        font-weight: bold;
+                        color: white;
+                }
+                
+                #gpio24.LOW {
+                        background-color: Black;
+                }
+                
+                #gpio24.HIGH {
+                        background-color: green;
+                }
+        </style>
+</head>
+<body background=../myproject/image/bg.png>
+    <div align="center">
+        <TABLE >
+            <TR>
+                <TD>
+                    <FONT face="Helvetica"> D&eacute;marrer &agrave;: </FONT>
+                </TD>
+                <TD>
+                    <select id="inputOn"></select>
+                </TD>
+                <TD>
+                    <select id="inputOnMin"></select>
+                </TD>
+            </TR>
+
+            <TR>
+                <TD>
+                    <FONT face="Helvetica">Stopper  &agrave;: </FONT>
+                </TD>
+                <TD>
+                    <select id="inputOff"></select>                  
+                </TD>
+                <TD>
+                    <select id="inputOffMin"></select>
+                </TD>
+            </TR>
+        </TABLE>
+        <div id="controls"></div>
+    </div>
+</body>
+</html>
