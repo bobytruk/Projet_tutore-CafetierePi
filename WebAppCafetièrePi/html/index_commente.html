@@ -1,24 +1,24 @@
+<!-- Règles de mise en forme à appliquer par le navigateur -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
-        <meta name="viewport" content="width=device-width">   <!--CompatibilitÃ© pour mobile -->
-        <title>Cafeti&egrave;rePi</title>  <!-- Titre de l'onglet -->
+<html> <!-- Elément racine de la page -->
+    <head> <!-- Informations d'entête utilisées -->
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width"> <!--Compatibilité pour mobile -->
+        <title>Cafeti&egrave;rePi</title> <!-- Titre de l'onglet -->
         <script type="text/javascript" src="/webiopi.js"></script>
-        <script type="text/javascript">
-        
-         webiopi().ready(function() {
-                // Following function will process data received from set/getCafetierePiHours macro.
+        <script type="text/javascript"> <!-- Début du code javascript-->
+            webiopi().ready(function() {
+                // Cette fonction traite les infos reçus de la macro set/getCafetierePiHours
                 var updateCafetierePiHours = function(macro, args, response) {
                     var hours = response.split(";");
-                    // Following lines use jQuery functions
+                    // Ces lignes utilises des fonctions jQuery
                     $("#inputOn").val(hours[0]);
                     $("#inputOff").val(hours[1]);
                 }
                 
+                // Cette fonction traite les infos reçus de la macro set/getCafetierePiMinutes
                 var updateCafetierePiMinutes = function(macro, args, response) {
                     var minutes = response.split(";");
-                    // Following lines use jQuery functions
                     $("#inputOnMin").val(minutes[0]);
                     $("#inputOffMin").val(minutes[1]);
                 }
@@ -32,50 +32,52 @@
                 
                 // Create a button to call setCafetierePiHours macro
                 var sendButton = webiopi().createButton("sendButton", "Envoyer", function() {
-                   // Arguments sent to the macro
+                    // Arguments envoyés aux macro
                     var hours = [$("#inputOn").val(), $("#inputOff").val()];
                     var minutes = [$("#inputOnMin").val(), $("#inputOffMin").val()];
-                    // Call the macro
+                    // Appelle des macros
                     webiopi().callMacro("setCafetierePiHours", hours, updateCafetierePiHours);
-                    webiopi().callMacro("setCafetierePiMinutes", minutes, updateCafetierePiMinutes);
+                    webiopi().callMacro("setCafetierePiMinutes", minutes,
+                    updateCafetierePiMinutes);
                 });
-
+                
                 // Append the button to the controls box using a jQuery function
                 $("#controls").append(sendButton);
-
-                // Create a "Allumer" labeled button for GPIO 24
+                
+                // création d'un bouton nommé "Allumer" pour contrôller le GPIO 24
                 var button = webiopi().createGPIOButton(24, "Allumer");
-
+                
                 // Append the button to the controls box
                 $("#controls").append(button);
-
-                // Refresh GPIO buttons
-                // pass true to refresh repeatedly of false to refresh once
+                
+                // Raffraichissement du bouton
+                // true pour rafraichire répétitivement uo false pour le rafraichire qu'une foi
                 webiopi().refreshGPIO(true);
                 
+                // Les fonctions suivantes permettent de créer les choix des listes déroulantes
                 (function() {
                     var elm = document.getElementById('inputOn'),
                     df = document.createDocumentFragment();
-                    for (var i = 0; i <= 23; i++) {
+                    for (var i = 0; i <= 11; i++) {
                         var option = document.createElement('option');
                         option.value = i;
                         option.appendChild(document.createTextNode(i+"h"));
                         df.appendChild(option);
                     }
                     elm.appendChild(df);
-                }());
+                });
                 
                 (function() {
                     var elm = document.getElementById('inputOff'),
                     df = document.createDocumentFragment();
-                    for (var i = 0; i <= 23; i++) {
+                    for (var i = 0; i <= 11; i++) {
                         var option = document.createElement('option');
                         option.value = i;
                         option.appendChild(document.createTextNode(i+"h"));
                         df.appendChild(option);
                     }
                     elm.appendChild(df);
-                }());
+                });
                 
                 (function() {
                     var elm = document.getElementById('inputOnMin'),
@@ -87,7 +89,7 @@
                         df.appendChild(option);
                     }
                     elm.appendChild(df);
-                }());
+                });
                 
                 (function() {
                     var elm = document.getElementById('inputOffMin'),
@@ -99,62 +101,60 @@
                         df.appendChild(option);
                     }
                     elm.appendChild(df);
-                }());
-
+                });
         });
         
-
-                
-        </script>
+        </script> <!-- Fin du code javascript -->
         
-        <style type="text/css">
-                button {
-                        display: block;
-                        margin: 5px 5px 5px 5px;
-                        width: 160px;
-                        height: 45px;
-                        font-size: 24pt;
-                        font-weight: bold;
-                        color: white;
-                }
-                
-                #gpio24.LOW {
-                        background-color: Black;
-                }
-                
-                #gpio24.HIGH {
-                        background-color: green;
-                }
-        </style>
-</head>
-<body background=../myproject/image/bg.png>
-    <div align="center">
-        <TABLE >
-            <TR>
-                <TD>
-                    <FONT face="Helvetica"> D&eacute;marrer &agrave;: </FONT>
-                </TD>
-                <TD>
-                    <select id="inputOn"></select>
-                </TD>
-                <TD>
-                    <select id="inputOnMin"></select>
-                </TD>
-            </TR>
-
-            <TR>
-                <TD>
-                    <FONT face="Helvetica">Stopper  &agrave;: </FONT>
-                </TD>
-                <TD>
-                    <select id="inputOff"></select>                  
-                </TD>
-                <TD>
-                    <select id="inputOffMin"></select>
-                </TD>
-            </TR>
-        </TABLE>
-        <div id="controls"></div>
-    </div>
-</body>
-</html>
+        <style type="text/css"> <!-- Début du code CSS -->
+            button { <!-- Deseign du bouton -->
+                display: block; <!-- Forme d'un rectangle -->
+                margin: 5px 5px 5px 5px; <!-- Epaisseur des contours -->
+                width: 160px; <!-- Largeur -->
+                height: 45px; <!-- Longueure -->
+                font-size: 24pt; <!-- Taille de police -->
+                font-weight: bold; <!-- Style de police gras -->
+                color: white; <!-- Couleur de la police -->
+            }
+            
+            #gpio24.LOW { <!-- Si le GPIO 24 = 0 -->
+                background-color: Black; <!-- Fond du bouton en noir -->
+            }
+            
+            #gpio24.HIGH { <!-- Si le GPIO 24 = 1 -->
+                background-color: green; <!-- Fond du bouton en blanc -->
+            }
+        </style> <!-- Fin du code CSS -->
+    
+    </head> <!-- -->
+    
+    <body> <!-- Début du corps de la page -->
+        <div align="center"> <!-- Permet de centrer le contenu de la page -->
+            <TABLE > <!-- Début du tableau -->
+                <TR> <!-- Début de la 1ere ligne du tableau -->
+                    <TD> <!-- Début de la 1ere colonne du tableau -->
+                        <FONT face="Helvetica"> D&eacute;marrer &agrave;: </FONT> <!-- Insertion d'un texte -->
+                    </TD> <!-- Fin de la 1ere colone du tableau -->
+                    <TD>
+                        <select id="inputOn"></select> <!-- Insertion d'une liste déroulante -->
+                    </TD>
+                    <TD>
+                        <select id="inputOnMin"></select>
+                    </TD>
+                </TR> <!-- Fin de la 1ere ligne du tableau -->
+                <TR>
+                    <TD>
+                        <FONT face="Helvetica">Stopper &agrave;: </FONT>
+                    </TD>
+                    <TD>
+                        <select id="inputOff"></select>
+                    </TD>
+                    <TD>
+                        <select id="inputOffMin"></select>
+                    </TD>
+                </TR>
+            </TABLE> <!-- Fin du tableau-->
+        <div id="controls"></div> <!-- Ajout des boutons -->
+        </div>
+    </body> <!-- Fin du corps de la page -->
+</html> <!-- Fin du code HTML -->

@@ -3,53 +3,50 @@ import datetime #import de l'heure
 
 GPIO = webiopi.GPIO
 
-CAFETIEREPI = 24 # GPIO pin using BCM numbering
+CAFETIEREPI = 24 # broche GPIO utilisant la numerotation BCM
 
-HOUR_ON  = 8  # Turn CafetierePi ON at 08:00
-HOUR_OFF = 18 # Turn CafetierePi OFF at 18:00
+HOUR_ON  = 0 # Heure d'allumage de la CafetierePi
+HOUR_OFF = 0 # Heure d'extinction de la CafetierePi 
 
-MINUTE_ON = 8
-MINUTE_OFF = 18
+MINUTE_ON  = 0 # Minute d'allumage de la CafetierePi
+MINUTE_OFF = 0 # Minute d'extinction de la CafetierePi
 
-# setup function is automatically called at WebIOPi startup
+# Fonction de parametrage automatiquement applée au démarage de WebIOPi
 def setup():
-    # set the GPIO used by the CafetierePi to output
+    # Configuration du GPIO utilisé par la CafetierePi en sortie
     GPIO.setFunction(CAFETIEREPI, GPIO.OUT)
 
-    # retrieve current datetime
-    now = datetime.datetime.now()
+    # Récupération de l'heure courante
+    #now = datetime.datetime.now()
 
-    # test if we are between ON time and tun the CafetierePi ON
-    if ((now.hour >= HOUR_ON) and (now.hour < HOUR_OFF)):
-        if((now.minute >= MINUTE_ON) and (now.minute < MINUTE_OFF)):
-            GPIO.digitalWrite(CAFETIEREPI, GPIO.HIGH) 
-
-# loop function is repeatedly called by WebIOPi 
+# La fonction loop est appellée répétitivement pae WebIOPi 
 def loop():
-    # retrieve current datetime
+    # Récupération de l'heure courante
     now = datetime.datetime.now()
 
-    # toggle CafetierePi ON all days at the correct time
+    # Allumer la CafetierePi tous les jours à l'heure correcte
     if ((now.hour == HOUR_ON) and (now.minute == MINUTE_ON ) and (now.second == 0)):
         if (GPIO.digitalRead(CAFETIEREPI) == GPIO.LOW):
             GPIO.digitalWrite(CAFETIEREPI, GPIO.HIGH)
 
-    # toggle CafetierePi OFF
+    # Eteindre la CafetierePi tous les jours à l'heure correcte
     if ((now.hour == HOUR_OFF) and (now.minute == MINUTE_OFF) and (now.second == 0)):
         if (GPIO.digitalRead(CAFETIEREPI) == GPIO.HIGH):
             GPIO.digitalWrite(CAFETIEREPI, GPIO.LOW)
 
-    # gives CPU some time before looping again
+    # Donne au CPU du temps avant de boucler à nouveau
     webiopi.sleep(1)
 
-# destroy function is called at WebIOPi shutdown
+# La fonction destroy est appelée lors de l'arret de WebIOPi
 def destroy():
     GPIO.digitalWrite(CAFETIEREPI, GPIO.LOW)
 
+# Fonction macro permettant d'extraire les heures paramétrées et de les placer dans des variables
 @webiopi.macro
 def getCafetierePiHours():
     return "%d;%d" % (HOUR_ON, HOUR_OFF)
     
+# Même chose pour les minutes    
 @webiopi.macro
 def getCafetierePiMinutes():
     return "%d;%d" % (MINUTE_ON, MINUTE_OFF)
